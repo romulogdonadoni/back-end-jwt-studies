@@ -9,6 +9,7 @@ app.use(express.json());
 mongoose
   .connect("mongodb+srv://romegd:s88Oc4G36gMIOZyQ@dbestuds.wojdxiz.mongodb.net/?retryWrites=true&w=majority")
   .then(() => {
+    app.listen(3333)
     console.log("Connected!");
   })
   .catch((error) => console.log(error));
@@ -21,7 +22,7 @@ app.post("/auth/login", async (req, res) => {
   const userExists = await Users.findOne({ username: username });
 
   if (!userExists) {
-    return res.status(404).end("Usuário não encontrado!");
+    return res.status(404).json({msg:"Usuário não encontrado"}).end();
   }
   const checkpassword = await password === userExists.password;
   if (!checkpassword) {
