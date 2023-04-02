@@ -1,14 +1,17 @@
 import express from "express";
 import mongoose from "mongoose";
 import { Users } from "./models/users.js";
-import { compare } from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-
+mongoose
+  .connect("mongodb+srv://romegd:s88Oc4G36gMIOZyQ@dbestuds.wojdxiz.mongodb.net/?retryWrites=true&w=majority")
+  .then(() => {
+    console.log("Connected!");
+  })
+  .catch((error) => console.log(error));
 
 app.post("/auth/login", async (req, res) => {
   const { username, password } = req.body;
@@ -57,10 +60,3 @@ app.post("/auth/register", async (req, res) => {
   return res.status(500).end();
 });
 
-mongoose
-  .connect("mongodb://127.0.0.1:27017/maindb")
-  .then(() => {
-    console.log("Connected!");
-    app.listen(3333);
-  })
-  .catch((error) => console.log(error));
