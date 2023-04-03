@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 import { Users } from "./models/users.js";
 import jwt from "jsonwebtoken";
-const SECRET = "5lBRWNHZJDIgeL1gtBLFzalN4DXl79DO";
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -14,22 +13,6 @@ mongoose
   })
   .catch((error) => console.log(error));
 
-/* function authHomePage(req, res, next) {
-  const token = req.headers["Authorization"];
-  jwt
-    .verify(token)
-    .then(() => {
-      console.log('ok')
-      next();
-    })
-    .catch(() => {
-      return res.status(401).end();
-    });
-}
-app.get("/homepage", authHomePage, (req, res) => {
-  return res.status(200).json({msg: "Autorizado"}).end()
-}); */
-
 app.post("/auth/login", async (req, res) => {
   const { username, password } = req.body;
   if (!req.body.username || !req.body.password) {
@@ -40,7 +23,7 @@ app.post("/auth/login", async (req, res) => {
   if (!user) {
     return res.status(404).json({ msg: "Usuário não encontrado" }).end();
   }
-  const checkpassword = await password === user.password;
+  const checkpassword = (await password) === user.password;
   if (!checkpassword) {
     return res.status(400).json({ msg: "Senha inválida!" }).end();
   }
@@ -49,7 +32,7 @@ app.post("/auth/login", async (req, res) => {
       {
         id: user._id,
       },
-      SECRET
+      "5lBRWNHZJDIgeL1gtBLFzalN4DXl79DO"
     );
     return res.status(200).json({ msg: "Usuário logado com sucesso!", token }).end();
   } catch (error) {
