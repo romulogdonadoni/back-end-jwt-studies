@@ -26,7 +26,7 @@ app.post("/auth/login", async (req, res) => {
   }
   const checkpassword = await password === userExists.password;
   if (!checkpassword) {
-    return res.status(400).end("Senha inválida!");
+    return res.status(400).json({msg:"Senha inválida!"}).end();
   }
 
   try {
