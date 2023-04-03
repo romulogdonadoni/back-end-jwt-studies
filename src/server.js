@@ -14,7 +14,7 @@ mongoose
   })
   .catch((error) => console.log(error));
 
-function authHomePage(req, res, next) {
+/* function authHomePage(req, res, next) {
   const token = req.headers["Authorization"];
   jwt
     .verify(token)
@@ -28,7 +28,7 @@ function authHomePage(req, res, next) {
 }
 app.get("/homepage", authHomePage, (req, res) => {
   return res.status(200).json({msg: "Autorizado"}).end()
-});
+}); */
 
 app.post("/auth/login", async (req, res) => {
   const { username, password } = req.body;
@@ -40,11 +40,10 @@ app.post("/auth/login", async (req, res) => {
   if (!user) {
     return res.status(404).json({ msg: "Usuário não encontrado" }).end();
   }
-  const checkpassword = (await password) === user.password;
+  const checkpassword = await password === user.password;
   if (!checkpassword) {
     return res.status(400).json({ msg: "Senha inválida!" }).end();
   }
-
   try {
     const token = jwt.sign(
       {
