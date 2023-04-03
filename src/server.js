@@ -2,9 +2,15 @@ import express from "express";
 import mongoose from "mongoose";
 import { Users } from "./models/users.js";
 import jwt from "jsonwebtoken";
+import cors from "cors";
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(
+  cors({
+    origem: "*",
+  })
+);
 mongoose
   .connect("mongodb+srv://romegd:s88Oc4G36gMIOZyQ@dbestuds.wojdxiz.mongodb.net/?retryWrites=true&w=majority")
   .then(() => {
@@ -12,6 +18,23 @@ mongoose
     console.log("Connected!");
   })
   .catch((error) => console.log(error));
+
+function auth(req, res, next) {
+  const token = req.headers["authorization"];
+  jwt.verify(token, "5lBRWNHZJDIgeL1gtBLFzalN4DXl79DO", function (err, decoded) {
+    if (err) {
+      console.log("Falha na verificação do token");
+      return res.status(401).json({ message: "Não autorizado" }).end();
+    } else {
+      console.log(decoded);
+      next();
+    }
+  });
+}
+
+app.get("/homepage", auth, (req, res) => {
+  res.status(200).json({ message: "Autorizado" }).end();
+});
 
 app.post("/auth/login", async (req, res) => {
   const { username, password } = req.body;
@@ -32,7 +55,8 @@ app.post("/auth/login", async (req, res) => {
       {
         id: user._id,
       },
-      "5lBRWNHZJDIgeL1gtBLFzalN4DXl79DO"
+      "5lBRWNHZJDIgeL1gtBLFzalN4DXl79DO",
+      { expiresIn: 3600 }
     );
     return res.status(200).json({ msg: "Usuário logado com sucesso!", token }).end();
   } catch (error) {
