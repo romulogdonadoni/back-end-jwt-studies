@@ -1,5 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
+import * as dotenv from "dotenv";
+dotenv.config();
 import { Users } from "./models/users.js";
 import jwt from "jsonwebtoken";
 import cors from "cors";
@@ -11,8 +13,11 @@ app.use(
     origem: "*",
   })
 );
+const SECRET = process.env.SECRET;
+const DB_USER = process.env.DB_USER;
+const DB_PASSWORD = process.env.DB_PASSWORD;
 mongoose
-  .connect("mongodb+srv://romegd:s88Oc4G36gMIOZyQ@dbestuds.wojdxiz.mongodb.net/?retryWrites=true&w=majority")
+  .connect(`mongodb+srv://${DB_USER}:${DB_PASSWORD}@dbestuds.wojdxiz.mongodb.net/?retryWrites=true&w=majority`)
   .then(() => {
     app.listen(3333);
     console.log("Connected!");
@@ -20,13 +25,13 @@ mongoose
   .catch((error) => console.log(error));
 
 function auth(req, res, next) {
-  const token = req.headers["authorization"];
-  jwt.verify(token, "5lBRWNHZJDIgeL1gtBLFzalN4DXl79DO", function (err, decoded) {
+  const token = req.headers["authorization"].split(" ")[1];
+  jwt.verify(token, SECRET, function (err, decoded) {
     if (err) {
       console.log("Falha na verificação do token");
       return res.status(401).json({ message: "Não autorizado" }).end();
     } else {
-      console.log(decoded);
+      /* console.log(decoded); */
       next();
     }
   });
